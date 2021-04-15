@@ -47,7 +47,11 @@ __global__ void nfa_kernel(	st_t *nfa_tables,
 							unsigned int *st_vec_lengths,
 							ST_BLOCK *persistents,
 							unsigned int *match_count, match_type *match_array, unsigned int match_vec_size,
-							unsigned int *accum_nfa_table_lengths, unsigned int *accum_offset_table_lengths, unsigned int *accum_state_vector_lengths){
+							unsigned int *accum_nfa_table_lengths, unsigned int *accum_offset_table_lengths, unsigned int *accum_state_vector_lengths
+#ifdef COUNTERS
+							, unsigned long long int *table_access_count
+#endif
+							){
 	
 	__shared__ unsigned int shr_match_count;//Note: initializing is not allowed for shared variable
 	shr_match_count = 0;
@@ -107,6 +111,7 @@ __global__ void nfa_kernel(	st_t *nfa_tables,
 				// Each thread reads 1 transition at each step.
 				st_t dst_state = nfa_tables[i + tr_base + accum_nfa_table_length];
 				st_t src_state = src_tables[i + tr_base + accum_nfa_table_length];  
+				atomicAdd(table_access_count, 1);
 		
 // These macros are there to extract the relevant fields.
 // Bits and chunks are there to select the right bit in the state vectors.

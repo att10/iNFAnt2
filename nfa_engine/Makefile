@@ -5,17 +5,17 @@ HOST_OBJ = cuda_allocator config_options globals half_trie sparse transition_gra
 COMMON_HEADERS = common.h
 
 NVCC=nvcc
-SM=sm_35
+#SM=sm_35
 #SM=sm_52
-#SM=sm_61
+SM=sm_61
 CXX=g++
 CC=gcc
 
 ######CUDA_INCLUDE=-I/usr/local/cuda/include
-CUDA_INCLUDE=-I/usr/local/cuda-8.0/include
+CUDA_INCLUDE=-I/usr/local/cuda-11.0/include -I/usr/local/cuda-11.0/extras/CUPTI/include -I/usr/local/cuda-11.1/extras/CUPTI/samples/extensions/include/profilerhost_util/ -I/usr/local/cuda-11.1/extras/CUPTI/samples/extensions/include/c_util/
 
-CXXFLAGS+=$(CUDA_INCLUDE) -Wno-deprecated
-NVCCFLAGS+=$(CUDA_INCLUDE) -Xptxas -v -arch ${SM} --compiler-options -Wno-deprecated -lineinfo -DTEXTURE_MEM_USE
+CXXFLAGS+=$(CUDA_INCLUDE) -Wno-deprecated -DCOUNTERS
+NVCCFLAGS+=$(CUDA_INCLUDE) -Xptxas -v -arch ${SM} --compiler-options -Wno-deprecated -lineinfo -DCOUNTERS #-DTEXTURE_MEM_USE
 
 export DYN_LIB=-lpcap -lboost_regex -lpcre
 

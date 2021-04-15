@@ -166,6 +166,13 @@ vector<set<unsigned> > nfa_execute(std::vector<TransitionGraph *> tg, Burst &bur
 	cudaMalloc((void **) &d_persistents,   tmp_state_vector_total_size);
 	cudaMalloc((void **) &d_accepts,       tmp_state_vector_total_size);
 	
+#ifdef COUNTERS
+	unsigned long long int h_table_access = 0;
+	unsigned long long int *d_table_access;
+	cudaMalloc((void**)&d_table_access, sizeof(unsigned long long int));
+	cudaMemcpy(d_table_access, &h_table_access, sizeof(unsigned long long int), cudaMemcpyHostToDevice);
+#endif
+
 	//GPUMemInfo();
 	
 	for (unsigned int i = 0; i < n_subsets; i++){//Copy to device memory
@@ -345,7 +352,11 @@ vector<set<unsigned> > nfa_execute(std::vector<TransitionGraph *> tg, Burst &bur
 												d_st_vec_lengths,
 												d_persistents,
 												d_match_count, d_match_array, tmp_avg_count,
-												d_accum_nfa_table_lengths, d_accum_offset_table_lengths, d_accum_state_vector_lengths);	
+												d_accum_nfa_table_lengths, d_accum_offset_table_lengths, d_accum_state_vector_lengths
+	#ifdef COUNTERS												
+												, d_table_access
+	#endif
+												);	
 #endif
 	
 	cudaThreadSynchronize();
@@ -368,6 +379,12 @@ vector<set<unsigned> > nfa_execute(std::vector<TransitionGraph *> tg, Burst &bur
 	
 	cudaMemcpy( h_match_count,  d_match_count,                 burst.get_sizes().size()  * n_subsets * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 	cudaMemcpy( h_match_array, d_match_array, (tmp_avg_count*burst.get_sizes().size()) * n_subsets * sizeof(match_type), cudaMemcpyDeviceToHost);
+
+#ifdef COUNTERS	
+	cudaMemcpy( &h_table_access, d_table_access, sizeof(unsigned long long int), cudaMemcpyDeviceToHost);
+	cout << "Table Accesses: " << h_table_access << endl;
+	cudaFree(d_table_access);
+#endif
 
     gettimeofday(&c3, NULL);		
 
