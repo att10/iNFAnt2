@@ -111,7 +111,10 @@ __global__ void nfa_kernel(	st_t *nfa_tables,
 				// Each thread reads 1 transition at each step.
 				st_t dst_state = nfa_tables[i + tr_base + accum_nfa_table_length];
 				st_t src_state = src_tables[i + tr_base + accum_nfa_table_length];  
+				
+#ifdef COUNTER
 				atomicAdd(table_access_count, 1);
+#endif
 		
 // These macros are there to extract the relevant fields.
 // Bits and chunks are there to select the right bit in the state vectors.

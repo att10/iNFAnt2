@@ -14,8 +14,8 @@ CC=gcc
 ######CUDA_INCLUDE=-I/usr/local/cuda/include
 CUDA_INCLUDE=-I/usr/local/cuda-11.0/include -I/usr/local/cuda-11.0/extras/CUPTI/include -I/usr/local/cuda-11.1/extras/CUPTI/samples/extensions/include/profilerhost_util/ -I/usr/local/cuda-11.1/extras/CUPTI/samples/extensions/include/c_util/
 
-CXXFLAGS+=$(CUDA_INCLUDE) -Wno-deprecated -DCOUNTERS
-NVCCFLAGS+=$(CUDA_INCLUDE) -Xptxas -v -arch ${SM} --compiler-options -Wno-deprecated -lineinfo -DCOUNTERS #-DTEXTURE_MEM_USE
+CXXFLAGS+=$(CUDA_INCLUDE) -Wno-deprecated ##-DCOUNTERS
+NVCCFLAGS+=$(CUDA_INCLUDE) -Xptxas -v -arch ${SM} --compiler-options -Wno-deprecated -lineinfo ##-DCOUNTERS #-DTEXTURE_MEM_USE
 
 export DYN_LIB=-lpcap -lboost_regex -lpcre
 
